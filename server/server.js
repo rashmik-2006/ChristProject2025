@@ -1,39 +1,47 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+// server.js
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 
-const authRoutes = require('./routes/auth');
-const offersRoutes = require('./routes/offers');
-const applicationsRoutes = require('./routes/applications');
+// Import routes
+const authRoutes = require("./routes/auth");
+const offersRoutes = require("./routes/offers");
+const applicationsRoutes = require("./routes/applications");
 
+// Initialize app
 const app = express();
+
+// Get port from environment or default to 5000
 const PORT = process.env.PORT || 5000;
 
-// ✅ CORS (FIXED)
+// ------------------- MIDDLEWARE -------------------
+// Enable CORS for your frontend (Vercel URL)
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://glistening-sopapillas-cc2ee9.netlify.app",
-      "https://6957e8dd20f4f30008f4ce30--glistening-sopapillas-cc2ee9.netlify.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
+    origin: process.env.CLIENT_URL || "https://christ-project2025-chi.vercel.app",
+    credentials: true, // Allow cookies, authorization headers
   })
 );
 
+// Parse JSON body
 app.use(express.json());
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/offers', offersRoutes);
-app.use('/api/applications', applicationsRoutes);
+// ------------------- ROUTES -------------------
+// Authentication routes
+app.use("/api/auth", authRoutes);
 
-// Test route
-app.get('/', (req, res) => {
-  res.send('Christ Recruiter Portal API is running 🚀');
+// Offers routes
+app.use("/api/offers", offersRoutes);
+
+// Applications routes
+app.use("/api/applications", applicationsRoutes);
+
+// ------------------- TEST ROUTE -------------------
+app.get("/", (req, res) => {
+  res.send("Christ Recruiter Portal API is running 🚀");
 });
 
+// ------------------- START SERVER -------------------
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
