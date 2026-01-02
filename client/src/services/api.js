@@ -1,34 +1,49 @@
 // src/services/api.js
 import axios from 'axios';
 
-// Use environment variable VITE_API_URL set in Netlify (or fallback to localhost for local dev)
+// Backend base URL
+// Netlify env: VITE_API_URL=https://christproject2025-wj51.onrender.com/api
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-
 // Create axios instance
-export const api = axios.create({
+const api = axios.create({
   baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// Add auth token to every request if available
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token'); // Assuming JWT stored in localStorage
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// Attach JWT token if available
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-// ------------------ API ENDPOINT FUNCTIONS ------------------
+// ------------------ AUTH APIs ------------------
 
-// Offers
+// Signup
+export const signup = (data) => api.post('/auth/signup', data);
+
+// Login
+export const login = (data) => api.post('/auth/login', data);
+
+// ------------------ OFFERS APIs ------------------
+
 export const getOffers = () => api.get('/offers');
 export const getOfferById = (id) => api.get(`/offers/${id}`);
 export const createOffer = (data) => api.post('/offers', data);
 
-// Applications
-export const createApplication = (data) => api.post('/applications', data);
-export const getApplicationsByOffer = (offerId) => api.get(`/applications/offer/${offerId}`);
+// ------------------ APPLICATION APIs ------------------
 
-// Export the axios instance
+export const createApplication = (data) => api.post('/applications', data);
+export const getApplicationsByOffer = (offerId) =>
+  api.get(`/applications/offer/${offerId}`);
+
+// Export axios instance
 export default api;
