@@ -9,49 +9,30 @@ const applicationsRoutes = require('./routes/applications');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-/* =======================
-   CORS CONFIG (FIX)
-======================= */
-
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://6957e8dd20f4f30008f4ce30--glistening-sopapillas-cc2ee9.netlify.app"
-];
-
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://glistening-sopapillas-cc2ee9.netlify.app"
-  ],
-  credentials: true
-}));
-
-
-/* =======================
-   MIDDLEWARE
-======================= */
+// ✅ CORS (FIXED)
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://glistening-sopapillas-cc2ee9.netlify.app",
+      "https://6957e8dd20f4f30008f4ce30--glistening-sopapillas-cc2ee9.netlify.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+  })
+);
 
 app.use(express.json());
 
-/* =======================
-   ROUTES
-======================= */
-
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/offers', offersRoutes);
 app.use('/api/applications', applicationsRoutes);
 
-/* =======================
-   TEST ROUTE
-======================= */
-
+// Test route
 app.get('/', (req, res) => {
   res.send('Christ Recruiter Portal API is running 🚀');
 });
-
-/* =======================
-   START SERVER
-======================= */
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
