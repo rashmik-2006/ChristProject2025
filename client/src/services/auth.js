@@ -1,42 +1,67 @@
-import { api } from './api';
-import { jwtDecode } from 'jwt-decode';
+// src/services/auth.js
+import { api } from "./api";
+import { jwtDecode } from "jwt-decode";
 
+// ---------------- LOGIN ----------------
 export const loginUser = async (email, password) => {
-  const response = await api.post('/auth/login', { email, password });
-  if (response.data.token) {
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('user', JSON.stringify(jwtDecode(response.data.token)));
+  const response = await api.post("/auth/login", { email, password });
+
+  if (response?.data?.token) {
+    localStorage.setItem("token", response.data.token);
+    localStorage.setItem(
+      "user",
+      JSON.stringify(jwtDecode(response.data.token))
+    );
   }
+
   return response.data;
 };
 
+// ---------------- SIGNUP ----------------
 export const signupUser = async (userData) => {
-  return await api.post('/auth/signup', userData);
-};
-
-export const verifyOTP = async (email, otp) => {
-  const response = await api.post('/auth/verify-otp', { email, otp });
-  if (response.data.token) {
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('user', JSON.stringify(jwtDecode(response.data.token)));
-  }
+  const response = await api.post("/auth/signup", userData);
   return response.data;
 };
 
+// ---------------- VERIFY OTP ----------------
+export const verifyOTP = async (email, otp) => {
+  const response = await api.post("/auth/verify-otp", { email, otp });
+
+  if (response?.data?.token) {
+    localStorage.setItem("token", response.data.token);
+    localStorage.setItem(
+      "user",
+      JSON.stringify(jwtDecode(response.data.token))
+    );
+  }
+
+  return response.data;
+};
+
+// ---------------- LOGOUT ----------------
 export const logout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  window.location.href = '/login';
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.replace("/login");
 };
 
+// ---------------- CURRENT USER ----------------
 export const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem('user'));
+  const user = localStorage.getItem("user");
+  return user ? JSON.parse(user) : null;
 };
 
+// ---------------- PASSWORD RESET ----------------
 export const requestPasswordReset = async (email) => {
-  return await api.post('/auth/forgot-password', { email });
+  const response = await api.post("/auth/forgot-password", { email });
+  return response.data;
 };
 
 export const resetPassword = async (email, otp, newPassword) => {
-  return await api.post('/auth/reset-password', { email, otp, newPassword });
+  const response = await api.post("/auth/reset-password", {
+    email,
+    otp,
+    newPassword,
+  });
+  return response.data;
 };
