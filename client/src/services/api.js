@@ -1,16 +1,16 @@
-// src/services/api.js
 import axios from "axios";
 
-// Base API URL (Render backend)
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 // Axios instance
 export const api = axios.create({
   baseURL: API_URL,
-  withCredentials: false,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-// Attach JWT token if exists
+// Attach token automatically
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -19,19 +19,41 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ------------------ OFFERS ------------------
-export const getOffers = () => api.get("/offers");
+/* =========================
+   AUTH APIs
+========================= */
 
-export const getOfferById = (id) => api.get(`/offers/${id}`);
+export const loginUser = (data) =>
+  api.post("/auth/login", data);
 
-export const createOffer = (data) => api.post("/offers", data);
+export const signupUser = (data) =>
+  api.post("/auth/signup", data);
 
-// ------------------ APPLICATIONS ------------------
-export const createApplication = (data) =>
-  api.post("/applications", data);
+export const verifyOTP = (data) =>
+  api.post("/auth/verify-otp", data);
 
+export const forgotPassword = (data) =>
+  api.post("/auth/forgot-password", data);
+
+export const resetPassword = (data) =>
+  api.post("/auth/reset-password", data);
+
+/* =========================
+   OFFERS APIs
+========================= */
+
+// GET all offers
+export const getOffers = () =>
+  api.get("/offers");
+
+// CREATE offer
+export const createOffer = (data) =>
+  api.post("/offers", data);
+
+// GET offer by ID
+export const getOfferById = (id) =>
+  api.get(`/offers/${id}`);
+
+// GET applications for an offer
 export const getApplicationsByOffer = (offerId) =>
-  api.get(`/applications/offer/${offerId}`);
-
-// Default export (optional but safe)
-export default api;
+  api.get(`/offers/${offerId}/applications`);
