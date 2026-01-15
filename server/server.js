@@ -11,15 +11,30 @@ const applicationsRoutes = require("./routes/applications");
 // Initialize app
 const app = express();
 
-// Get port from environment or default to 5000
+// Render provides PORT dynamically
 const PORT = process.env.PORT || 5000;
 
 // ------------------- MIDDLEWARE -------------------
-// Enable CORS for your frontend (Vercel URL)
+
+// Allowed frontend URLs
+const allowedOrigins = [
+  "https://christ-project2025-chi.vercel.app", // Vercel frontend
+  process.env.CLIENT_URL,                      // optional env override
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "https://christ-project2025-chi.vercel.app",
-    credentials: true, // Allow cookies, authorization headers
+    origin: function (origin, callback) {
+      // Allow requests with no origin (Postman, server-to-server)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("CORS not allowed"), false);
+    },
+    credentials: true,
   })
 );
 
@@ -27,21 +42,17 @@ app.use(
 app.use(express.json());
 
 // ------------------- ROUTES -------------------
-// Authentication routes
 app.use("/api/auth", authRoutes);
-
-// Offers routes
 app.use("/api/offers", offersRoutes);
-
-// Applications routes
 app.use("/api/applications", applicationsRoutes);
 
-// ------------------- TEST ROUTE -------------------
+// ------------------- HEALTH CHECK -------------------
 app.get("/", (req, res) => {
-  res.send("Christ Recruiter Portal API is running 🚀");
+  res.status(200).send("Christ Recruiter Portal API is running 🚀");
 });
 
 // ------------------- START SERVER -------------------
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// IMPORTANT: bind to 0.0.0.0 for Render
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
