@@ -4,19 +4,11 @@
   "description": "Christ Recruiter Portal",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js",
-
-    "build": "prisma generate",
-
     "start": "node server.js",
-
-    "postinstall": "prisma generate",
-
-    "migrate": "prisma migrate deploy"
+    "dev": "nodemon server.js",
+    "migrate": "prisma migrate deploy",
+    "build": "npm install && npx prisma generate"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
