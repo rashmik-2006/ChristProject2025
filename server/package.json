@@ -5,9 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js",
-    "migrate": "prisma migrate deploy",
-    "build": "npx prisma generate"
+    "migrate": "prisma migrate deploy"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -19,7 +17,6 @@
     "nodemailer": "^7.0.12"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0",
     "prisma": "^5.22.0"
   }
 }
