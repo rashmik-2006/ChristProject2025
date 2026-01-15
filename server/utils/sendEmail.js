@@ -1,17 +1,25 @@
-const { Resend } = require("resend");
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+const nodemailer = require("nodemailer");
 
 const sendEmail = async (to, subject, text) => {
   try {
-    await resend.emails.send({
-      from: "Christ Recruiter Portal <onboarding@resend.dev>",
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER, // your gmail
+        pass: process.env.EMAIL_PASS, // app password
+      },
+    });
+
+    const mailOptions = {
+      from: `"Christ Recruiter Portal" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       text,
-    });
+    };
 
-    console.log("✅ Email sent successfully");
+    await transporter.sendMail(mailOptions);
+
+    console.log("✅ Email sent successfully to:", to);
   } catch (error) {
     console.error("❌ Email sending failed:", error);
     throw error;
